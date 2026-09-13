@@ -277,6 +277,31 @@ export default function Dashboard() {
         setShowModal(true);
     }
 
+    async function fetchHabits() {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch("http://localhost:5000/habit-logs", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (res.ok) {
+                // data is [{ habitId, logs, currentStreak, longestStreak }]
+                setHabits(data.map(h => ({
+                    id: parseInt(h.habitId),
+                    title: h.title,
+                    description: h.description,
+                    streak: h.currentStreak,
+                    longestStreak: h.longestStreak,
+                    logs: h.logs
+                })));
+            } else {
+                showToast(data.error || "Failed to fetch habits", "error");
+            }
+        } catch (err) {
+            console.error("Error fetching habits:", err);
+            showToast("Error fetching habits", "error");
+        }
+    }
 
     // Mark habit as done (log completion)
     async function handleMarkDone(id) {
@@ -294,14 +319,11 @@ export default function Dashboard() {
                 body: JSON.stringify({ habitId: id, dateCompleted: today }),
             });
             const log = await res.json();
-
-            // Update streak count locally
-            setHabits(
-                habits.map(h =>
-                    h.id === id ? { ...h, streak: (h.streak || 0) + 1 } : h
-                )
-            );
-            showToast("Habit marked as complete!", "success");
+            if (res.ok) {
+                showToast("Habit marked as complete!", "success");
+                // Instead of local math, refresh habits
+                fetchHabits();
+            }
         } catch (err) {
             console.error("Error marking habit done:", err);
             showToast("Error marking habit done", "error");
@@ -323,12 +345,8 @@ export default function Dashboard() {
             const data = await res.json();
             if (res.ok) {
                 showToast("Habit completion undone!", "success");
-                // Refresh habits or adjust streak locally
-                setHabits(
-                    habits.map(h =>
-                        h.id === id ? { ...h, streak: Math.max((h.streak || 0) - 1, 0) } : h
-                    )
-                );
+                // Use streaks from backend or refresh habits
+                fetchHabits();
             } else {
                 showToast(data.error || "Failed to undo", "error");
             }

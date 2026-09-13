@@ -19,6 +19,8 @@ export async function fetchHabitLogs(req, res) {
             const streaks = calculateStreaks(habitLogs);
             return {
                 habitId,
+                title: habitLogs[0].title,
+                description: habitLogs[0].description,
                 logs: habitLogs,
                 ...streaks
             };
@@ -34,8 +36,20 @@ export async function fetchHabitLogs(req, res) {
 export async function createHabitLog(req, res) {
     const { habitId, dateCompleted, notes } = req.body;
     try {
-        const log = await addHabitLog(req.user.id, habitId, dateCompleted, notes);
-        res.status(201).json(log);
+        await addHabitLog(req.user.id, habitId, dateCompleted, notes);
+
+        // Fetch updated logs for this habit
+        const logs = await getHabitLogsByUser(req.user.id);
+        const habitLogs = logs.filter(log => log.habit_id === parseInt(habitId));
+        const streaks = calculateStreaks(habitLogs);
+
+        res.status(201).json({
+            habitId,
+            title: habitLogs[0]?.title,
+            description: habitLogs[0]?.description,
+            logs: habitLogs,
+            ...streaks
+        });
     } catch (err) {
         console.error(err.message);
         res.status(500).json({ error: "Server error" });
@@ -87,7 +101,20 @@ export async function undoHabitCompletion(req, res) {
             return res.status(404).json({ error: "No habit log found to undo" });
         }
 
-        res.json({ message: "Habit completion undone", log: undoneLog });
+        // Fetch remaining logs for this habit
+        const logs = await getHabitLogsByUser(userId);
+        const habitLogs = logs.filter(log => log.habit_id === parseInt(habitId));
+
+        // Recalculate streaks
+        const streaks = calculateStreaks(habitLogs);
+
+        res.json({
+            habitId,
+            title: habitLogs[0]?.title,
+            description: habitLogs[0]?.description,
+            logs: habitLogs,
+            ...streaks
+        });
     } catch (err) {
         console.error("Error undoing habit completion:", err.message);
         res.status(500).json({ error: "Server error" });

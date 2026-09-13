@@ -2,7 +2,7 @@ import pool from "../db.js";
 
 export async function getHabitLogsByUser(userId) {
     const result = await pool.query(
-        `SELECT hl.* 
+        `SELECT hl.*, h.title, h.description
      FROM habit_logs hl
      JOIN habits h ON hl.habit_id = h.id
      WHERE h.user_id = $1`,
