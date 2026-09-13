@@ -1,0 +1,396 @@
+.dashboard {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.dashboard h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* centers horizontally */
+    justify-content: center;
+    margin-top: 20px;
+}
+.profile-pic {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative; /* gives context for ::after */
+}
+
+.profile-pic:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.profile-pic::after {
+    content: "Click to update photo";
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #666;
+    opacity: 0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: opacity 0.2s ease;
+    pointer-events: none;  /* don’t block clicks */
+}
+
+.profile-pic:hover::after {
+    opacity: 1;
+}
+
+.profile-pic.clickable {
+    cursor: pointer;
+}
+
+.profile-pic.clickable:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.profile-pic-wrapper {
+    position: relative; /* anchor for tooltip */
+    display: inline-block;
+}
+
+.profile-pic-wrapper::after {
+    content: "Click to update photo";
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #666;
+    background: #fff; /* optional background */
+    padding: 2px 6px;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.profile-pic-wrapper:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px); /* subtle upward motion */
+}
+
+.habit-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.habit-form input {
+    flex: 1;
+    padding: 10px;
+}
+
+.habit-form button {
+    padding: 10px 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.habit-form button:hover {
+    background: #0056b3;
+}
+
+.dashboard ul {
+    list-style: none;
+    padding: 0;
+}
+
+.dashboard li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.empty-message {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.divider {
+    margin: 15px auto;
+    width: 80%;
+    border-top: 1px solid #ddd;
+}
+
+.habit-list {
+    list-style: none;
+    padding: 0;
+}
+
+.habit-item {
+    display: flex;
+    flex-direction: column;
+    /* stack content neatly */
+    gap: 10px;
+    padding: 16px;
+    margin-bottom: 15px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.habit-name {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.habit-description {
+    font-size: 0.95rem;
+    color: #666;
+    margin: 6px 0;
+}
+
+.habit-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.habit-actions button {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.habit-actions button:nth-child(1) {
+    background: #ffc107;
+    color: #fff;
+}
+
+.habit-actions button:nth-child(1):hover {
+    background: #e0a800;
+}
+
+.habit-actions button:nth-child(2) {
+    background: #dc3545;
+    color: #fff;
+}
+
+.habit-actions button:nth-child(2):hover {
+    background: #c82333;
+}
+
+.habit-actions button:nth-child(3) {
+    background: #28a745;
+    color: #fff;
+}
+
+.habit-actions button:nth-child(3):hover {
+    background: #218838;
+}
+
+.habit-streak {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.logout-container {
+    display: flex;
+    justify-content: center;
+    /* ✅ centers horizontally */
+    margin: 15px 0;
+}
+
+.logout-button {
+    padding: 10px 18px;
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s ease;
+}
+
+.logout-button:hover {
+    background: #c82333;
+}
+
+.input-error {
+    border: 2px solid #dc3545;
+    /* red border */
+    background-color: #ffe6e6;
+    /* light red background */
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin: 6px 0;
+}
+
+.icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+/* Force icons to appear white */
+.white-icon {
+    filter: brightness(0) invert(1);
+}
+
+/* Hover effect: scale + brighten */
+button:hover .white-icon {
+    transform: scale(1.15); /* slight zoom */
+    filter: brightness(0) invert(1) drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
+}
+
+button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px; /* spacing between icon and text */
+    color: #fff; /* ensure text is white */
+    font-weight: bold;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover effect for text */
+button:hover {
+    color: #f8f9fa; /* slightly brighter white */
+    transform: scale(1.03); /* subtle zoom for whole button */
+}
+
+button:hover span,
+button:hover .logo-text {
+    text-decoration: none; /* underline text on hover or not */
+}
+
+.app-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+}
+
+@media (min-width: 320px) and (max-width: 375px) {
+    .habit-item {
+        width: 100%;
+        max-width: 300px; /* prevents card from shrinking too far */
+        margin: 0 auto; /* center the card */
+        padding: 12px; /* breathing space inside */
+    }
+
+    .habit-actions {
+        flex-wrap: wrap; /* buttons wrap instead of spilling */
+        justify-content: center;
+        gap: 8px; /* spacing between buttons */
+    }
+
+    .habit-form {
+        display: flex;
+        flex-direction: column; /* stack inputs vertically */
+        align-items: center;
+        width: 100%;
+    }
+
+    .habit-form input,
+    .habit-form textarea {
+        width: 100%;
+        max-width: 300px; /* prevent cutoff */
+        box-sizing: border-box; /* include padding in width */
+        margin-bottom: 10px;
+    }
+
+    .habit-form button {
+        width: 100%;
+        max-width: 200px; /* keep button neat */
+    }
+}
+
+@media (min-width: 320px) and (max-width: 375px) {
+    .habit-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* center cards horizontally */
+        gap: 12px; /* spacing between cards */
+    }
+
+    .habit-item {
+        width: 100%;
+        max-width: 300px; /* prevent shrinking too far */
+        margin: 0 auto; /* center each card */
+        padding: 12px;
+        box-sizing: border-box;
+    }
+
+    .habit-actions {
+        flex-wrap: wrap; /* wrap buttons neatly */
+        justify-content: center;
+        gap: 8px;
+    }
+}
+
+@media (min-width: 320px) and (max-width: 375px) {
+    .habit-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* center form */
+        justify-content: center;
+        width: 100%;
+        max-width: 260px;
+        margin: 0 auto 20px auto;
+        box-sizing: border-box;
+        padding: 10px;
+    }
+
+    .habit-form input,
+    .habit-form textarea {
+        width: 100%;
+        max-width: 200px; /* prevent cutoff */
+        box-sizing: border-box;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+    }
+
+    .habit-form button {
+        width: 100%;
+        max-width: 180px; /* keep button neat */
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+}
+

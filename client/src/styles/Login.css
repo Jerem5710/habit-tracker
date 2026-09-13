@@ -1,0 +1,105 @@
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 300px;
+    margin: 50px auto;
+    padding: 20px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.login-form h2 {
+    text-align: center;
+}
+
+.login-form input,
+.login-form button {
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.login-form button {
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.login-form button:hover {
+    background: #0056b3;
+}
+
+.app-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+@media (min-width: 320px) and (max-width: 375px) {
+    .auth-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 95%; /* shrink to fit viewport */
+        max-width: 280px; /* hard cap */
+        margin: 0 auto 20px auto;
+        box-sizing: border-box;
+        padding: 16px;
+    }
+
+        .auth-card form {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* center form elements */
+            width: 100%;
+        }
+
+    .auth-card input {
+        width: 100%;
+        max-width: 260px; /* prevent cutoff */
+        box-sizing: border-box;
+        margin-bottom: 12px;
+        font-size: 0.9rem;
+    }
+
+    .auth-card button{
+        width: 100%;
+        max-width: 180px; /* shrink button */
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px; /* keep icon + text neat */
+    }
+}
+
+.app-logo {
+    display: flex;
+    flex-direction: column; /* stack logo image + text */
+    align-items: center; /* center horizontally */
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px; /* spacing below image */
+}
+
+.logo-text {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center; /* center text */
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
