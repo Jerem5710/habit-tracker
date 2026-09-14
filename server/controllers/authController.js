@@ -18,25 +18,28 @@ export async function registerUser(req, res) {
         res.status(201).json(result.rows[0]);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send("Server error");
+        res.status(500).json({ error: "Server error" });
     }
 }
 
 export async function loginUser(req, res) {
     const { email, password } = req.body;
+
+    console.log("Login body:", req.body);
+
     try {
         const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
         const user = result.rows[0];
-        if (!user) return res.status(400).send("Invalid credentials");
+        if (!user) return res.status(400).json({ error: "Invalid credentials" });
 
         const isMatch = await bcrypt.compare(password, user.password_hash);
-        if (!isMatch) return res.status(400).send("Invalid credentials");
+        if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
         // issue JWT
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ id: user.id, username: user.username, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
         res.json({ token });
     } catch (err) {
         console.error(err.message);
-        res.status(500).send("Server error");
+        res.status(500).json({ error: "Server error" });
     }
 }
