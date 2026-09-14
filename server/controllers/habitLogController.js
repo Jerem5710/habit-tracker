@@ -93,7 +93,8 @@ export async function removeHabitLog(req, res) {
 export async function undoHabitCompletion(req, res) {
     try {
         const userId = req.user.id;
-        const { habitId } = req.body;
+        const habitId = parseInt(req.body.habitId, 10);
+        // const { habitId } = req.body;
 
         const undoneLog = await undoLatestHabitLog(userId, habitId);
 

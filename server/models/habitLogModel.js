@@ -13,8 +13,12 @@ export async function getHabitLogsByUser(userId) {
 
 export async function addHabitLog(userId, habitId, dateCompleted, notes) {
     const result = await pool.query(
-        "INSERT INTO habit_logs (habit_id, date_completed, notes) VALUES ($1, $2, $3) RETURNING *",
-        [habitId, dateCompleted, notes]
+        `INSERT INTO habit_logs (habit_id, date_completed, notes, created_at)
+        SELECT h.id, $2, $3, NOW()
+        FROM habits h
+        WHERE h.id = $1 AND h.user_id = $4
+        RETURNING *`,
+        [habitId, dateCompleted, notes, userId]
     );
     return result.rows[0];
 }
@@ -45,7 +49,7 @@ export async function deleteHabitLog(userId, logId) {
 }
 
 // Undo the latest habit log for a specific habit
-export async function undoLatestHabitLog(userId, habitId) {
+/* export async function undoLatestHabitLog(userId, habitId) {
     const result = await pool.query(
         `DELETE FROM habit_logs hl
      USING habits h
@@ -57,6 +61,26 @@ export async function undoLatestHabitLog(userId, habitId) {
      )
      AND h.id = hl.habit_id
      AND h.user_id = $2
+     RETURNING hl.*`,
+        [habitId, userId]
+    );
+    return result.rows[0];
+} */
+
+export async function undoLatestHabitLog(userId, habitId) {
+    const result = await pool.query(
+    `DELETE FROM habit_logs hl
+     USING habits h
+     WHERE hl.habit_id = h.id
+       AND h.user_id = $2
+       AND hl.id = (
+         SELECT hl2.id
+         FROM habit_logs hl2
+         JOIN habits h2 ON hl2.habit_id = h2.id
+         WHERE hl2.habit_id = $1 AND h2.user_id = $2
+         ORDER BY hl2.date_completed DESC, hl2.created_at DESC
+         LIMIT 1
+       )
      RETURNING hl.*`,
         [habitId, userId]
     );

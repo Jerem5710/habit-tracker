@@ -24,6 +24,9 @@ export async function registerUser(req, res) {
 
 export async function loginUser(req, res) {
     const { email, password } = req.body;
+
+    console.log("Login body:", req.body);
+
     try {
         const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
         const user = result.rows[0];
