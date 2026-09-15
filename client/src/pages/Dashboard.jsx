@@ -157,10 +157,12 @@ export default function Dashboard() {
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
-            const payload = { title: newHabit, goal: parseInt(newGoal, 10) };
-            if (newDescription.trim() !== "") {
-                payload.description = newDescription;
-            }
+            const payload = {
+                title: newHabit,
+                description: newDescription.trim() !== "" ? newDescription : undefined,
+                goal: newGoal ? parseInt(newGoal, 10) : undefined,
+                frequency: newFrequency || "daily" // 👈 ensure frequency is always set
+            };
 
             const res = await fetch(`${import.meta.env.VITE_API_URL}/habits`, {
                 method: "POST",
