@@ -26,6 +26,7 @@ export default function Dashboard() {
     const [newHabit, setNewHabit] = useState("");
     const [newDescription, setNewDescription] = useState("");
     const [newGoal, setNewGoal] = useState("");
+    const [newFrequency, setNewFrequency] = useState("daily"); // default to daily
     const [showModal, setShowModal] = useState(false);
     const [modalContent, setModalContent] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -161,7 +162,7 @@ export default function Dashboard() {
                 title: newHabit,
                 description: newDescription.trim() !== "" ? newDescription : undefined,
                 goal: newGoal ? parseInt(newGoal, 10) : undefined,
-                frequency: newFrequency || "daily" // 👈 ensure frequency is always set
+                frequency: newFrequency  // include frequency in the payload
             };
 
             const res = await fetch(`${import.meta.env.VITE_API_URL}/habits`, {
@@ -461,7 +462,16 @@ export default function Dashboard() {
                             onChange={e => setNewGoal(e.target.value)}
                             min="1"
                             required
-                        />
+                            />
+                            <select
+                                value={newFrequency}
+                                onChange={e => setNewFrequency(e.target.value)}
+                                required
+                            >
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
                         {formError && <p className="error-message">{formError}</p>}
                         <button type="submit"><img src={addIcon} alt="Add" className="icon white-icon" /><span>Add Habit</span></button>
             </form>
