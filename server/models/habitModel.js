@@ -5,22 +5,22 @@ export async function getHabitsByUser(userId) {
     return result.rows;
 }
 
-export async function createHabit(userId, title, description, frequency) {
+export async function createHabit(userId, title, description, frequency, goal) {
     const result = await pool.query(
-        "INSERT INTO habits (user_id, title, description, frequency) VALUES ($1, $2, $3, $4) RETURNING *",
-        [userId, title, description, frequency]
+        "INSERT INTO habits (user_id, title, description, frequency, goal) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+        [userId, title, description, frequency, goal]
     );
     return result.rows[0];
 }
 
 // Update habit
-export async function updateHabit(userId, habitId, title, description, frequency) {
+export async function updateHabit(userId, habitId, title, description, frequency, goal) {
     const result = await pool.query(
         `UPDATE habits 
-     SET title = $1, description = $2, frequency = $3
-     WHERE id = $4 AND user_id = $5
+     SET title = $1, description = $2, frequency = $3, goal = $4
+     WHERE id = $5 AND user_id = $6
      RETURNING *`,
-        [title, description, frequency, habitId, userId]
+        [title, description, frequency, goal, habitId, userId]
     );
     return result.rows[0];
 }

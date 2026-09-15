@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { login } from "../services/authService";
 import PageWrapper from "../components/PageWrapper";
 import { useToast } from "../context/ToastContext";
+import LoadingScreen from "../components/LoadingScreen"; // optional loading screen component
 import "../styles/Login.css";
 
 import habitLogo from "../assets/habit-tracker.png";
@@ -12,9 +13,11 @@ export default function Login() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const showToast = useToast();
+    const [loading, setLoading] = useState(false); // optional loading state
 
     async function handleSubmit(e) {
         e.preventDefault();
+        setLoading(true); // Show loading screen while logging in
         try {
         const data = await login(form.email, form.password);
         if (data.token) {
@@ -36,7 +39,13 @@ export default function Login() {
         } catch (err) {
             setError("Server error, please try again");
             showToast("Error logging in", "error"); // show toast on server error
+        } finally {
+            setTimeout(() => setLoading(false), 500); // Hide loading screen after login attempt
         }
+    }
+
+    if (loading) {
+        return <LoadingScreen message="Signing you in..." />;
     }
 
     return (

@@ -3,7 +3,7 @@ import { calculateStreaks } from "../utils/streaks.js";
 
 export async function fetchHabitLogs(req, res) {
     try {
-        const logs = await getHabitLogsByUser(req.user.id);
+        /*const logs = await getHabitLogsByUser(req.user.id); ( - older implementation commented out)
 
         // group logs by habit_id
         const habitsWithStreaks = {};
@@ -12,17 +12,47 @@ export async function fetchHabitLogs(req, res) {
                 habitsWithStreaks[log.habit_id] = [];
             }
             habitsWithStreaks[log.habit_id].push(log);
-        });
+        }); */
+        const rows = await getHabitLogsByUser(req.user.id);
 
-        // calculate streaks for each habit
-        const result = Object.entries(habitsWithStreaks).map(([habitId, habitLogs]) => {
+        // group logs by habit_id
+        const habitsWithLogs = {};
+        rows.forEach(row => {
+            if (!habitsWithLogs[row.habit_id]) {
+                habitsWithLogs[row.habit_id] = {
+                    habitId: row.habit_id,
+                    title: row.title,
+                    description: row.description,
+                    goal: row.goal,
+                    logs: []
+                };
+            }
+            if (row.log_id) {
+                habitsWithLogs[row.habit_id].logs.push(row);
+            }
+        });
+        // calculate streaks for each habit - older implementation commented out
+        /* const result = Object.entries(habitsWithStreaks).map(([habitId, habitLogs]) => {
             const streaks = calculateStreaks(habitLogs);
             return {
                 habitId,
                 title: habitLogs[0].title,
                 description: habitLogs[0].description,
+                goal: habitLogs[0].goal, // comes from the habit table, ensure it's included in the SELECT query in getHabitLogsByUser
+                completedCount: habitLogs.length || 0, // count of completed logs
                 logs: habitLogs,
                 ...streaks
+            };
+        }); */
+        // calculate streaks + completedCount
+        const result = Object.values(habitsWithLogs).map(habit => {
+            const streaks = calculateStreaks(habit.logs || []);
+            return {
+                ...habit,
+                completedCount: habit.logs.length, // ? habit.logs.length : 0,
+                currentStreak: streaks.currentStreak,
+                longestStreak: streaks.longestStreak
+                //...streaks
             };
         });
 
@@ -47,7 +77,9 @@ export async function createHabitLog(req, res) {
             habitId,
             title: habitLogs[0]?.title,
             description: habitLogs[0]?.description,
+            goal: habitLogs[0]?.goal,
             logs: habitLogs,
+            completedCount: habitLogs.length,
             ...streaks
         });
     } catch (err) {
