@@ -4,6 +4,8 @@ import { jwtDecode } from "jwt-decode";
 import { useToast } from "../context/ToastContext.jsx"; // import the custom hook
 import PageWrapper from "../components/PageWrapper";
 import Modal from "../components/Modal";
+import ProgressBar from "../components/ProgressBar";
+import LoadingScreen from "../components/LoadingScreen"; // optional loading screen component
 // import Toast from "../components/Toast";
 import "../styles/Dashboard.css";
 import "../styles/Modal.css";
@@ -23,8 +25,10 @@ export default function Dashboard() {
     const [habits, setHabits] = useState([]);
     const [newHabit, setNewHabit] = useState("");
     const [newDescription, setNewDescription] = useState("");
+    const [newGoal, setNewGoal] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [modalContent, setModalContent] = useState(null);
+    const [loading, setLoading] = useState(true);
     // const [file, setFile] = useState(null);
     // const [toast, setToast] = useState(null);
     const [formError, setFormError] = useState(null);
@@ -34,6 +38,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         async function fetchUserAndHabits() {
+            setLoading(true); // Show loading screen while fetching
             try {
                 const token = localStorage.getItem("token");
                 if (!token) {
@@ -55,7 +60,7 @@ export default function Dashboard() {
                 // setUser(decoded);
 
                 // Fetch habits
-                const habitsRes = await fetch("http://localhost:5000/habits", {
+                /* const habitsRes = await fetch("http://localhost:5000/habits", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (habitsRes.status === 401 || habitsRes.status === 403) {
@@ -65,10 +70,16 @@ export default function Dashboard() {
                 }
 
                 const habitsData = await habitsRes.json();
-                setHabits(habitsData);
+                setHabits(habitsData); */
+
+                // Instead of fetching /habits directly, call your merged fetchHabits
+
+                await fetchHabits();
             } catch (err) {
                 console.error("Error fetching data:", err);
                 window.location.href = "/login";   // fallback redirect
+            } finally {
+                setTimeout(() => setLoading(false), 500); // Hide loading screen after fetching
             }
         }
         fetchUserAndHabits();
@@ -146,7 +157,7 @@ export default function Dashboard() {
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
-            const payload = { title: newHabit };
+            const payload = { title: newHabit, goal: parseInt(newGoal, 10) };
             if (newDescription.trim() !== "") {
                 payload.description = newDescription;
             }
@@ -163,6 +174,7 @@ export default function Dashboard() {
             setHabits([...habits, habit]);
             setNewHabit("");
             setNewDescription("");
+            setNewGoal("");
             showToast("Habit added successfully!", "success");
         } catch (err) {
             console.error("Error adding habit:", err);
@@ -183,6 +195,7 @@ export default function Dashboard() {
 
                         const newTitle = e.target.elements.newTitle.value;
                         const newDescription = e.target.elements.newDescription.value;
+                        const newGoal = e.target.elements.newGoal.value;
 
                         if (newTitle.trim() === "") {
                             setEditFormError("Title is required");
@@ -192,7 +205,7 @@ export default function Dashboard() {
 
                         try {
                             const token = localStorage.getItem("token");
-                            const payload = { title: newTitle };
+                            const payload = { title: newTitle, goal: parseInt(newGoal, 10) };
                             if (newDescription.trim() !== "") {
                                 payload.description = newDescription;
                             }
@@ -207,7 +220,11 @@ export default function Dashboard() {
                             });
 
                             const updatedHabit = await res.json();
-                            setHabits(habits.map(h => (h.id === id ? updatedHabit : h)));
+                            setHabits(habits.map(h =>
+                            h.id === id
+                                ? { ...h, ...updatedHabit } // merge updated fields
+                                : h
+                            ));
                             setShowModal(false);
                             showToast("Habit updated successfully!", "success");
                         } catch (err) {
@@ -228,6 +245,14 @@ export default function Dashboard() {
                         name="newDescription"
                         defaultValue={habitToEdit?.description || ""}
                         placeholder="New description (optional)..."
+                    />
+                    <input
+                        type="number"
+                        name="newGoal"
+                        defaultValue={habitToEdit?.goal || ""}
+                        placeholder="Goal (e.g. 7 days)"
+                        min="1"
+                        required
                     />
                     {editFormError && <p className="error-message">{editFormError}</p>}
                     <div className="modal-actions">
@@ -280,22 +305,40 @@ export default function Dashboard() {
     async function fetchHabits() {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch("http://localhost:5000/habit-logs", {
+
+            const [habitsRes, logsRes] = await Promise.all([
+                fetch("http://localhost:5000/habits", {
                 headers: { Authorization: `Bearer ${token}` },
-            });
-            const data = await res.json();
-            if (res.ok) {
-                // data is [{ habitId, logs, currentStreak, longestStreak }]
-                setHabits(data.map(h => ({
-                    id: parseInt(h.habitId),
-                    title: h.title,
-                    description: h.description,
-                    streak: h.currentStreak,
-                    longestStreak: h.longestStreak,
-                    logs: h.logs
-                })));
+                }),
+                fetch("http://localhost:5000/habit-logs", {
+                headers: { Authorization: `Bearer ${token}` },
+                })
+            ]);
+
+            const habitsData = await habitsRes.json();
+            console.log("Habits from /habits:", habitsData);
+            
+            const logsData = await logsRes.json();
+            console.log("Logs from /habit-logs:", logsData);
+
+            if (habitsRes.ok && logsRes.ok) {
+                const merged = habitsData.map(habit => {
+                    const logInfo = logsData.find(l => parseInt(l.habitId) === habit.id);
+                    return {
+                        id: habit.id,
+                        title: habit.title,
+                        description: habit.description,
+                        goal: habit.goal,
+                        streak: logInfo?.currentStreak ?? 0,
+                        longestStreak: logInfo?.longestStreak ?? 0,
+                        completedCount: logInfo?.completedCount ?? 0,
+                        logs: logInfo?.logs ?? []
+                    };
+                });
+                console.log("Merged habits:", merged);
+                setHabits(merged);
             } else {
-                showToast(data.error || "Failed to fetch habits", "error");
+                showToast("Failed to fetch habits", "error");
             }
         } catch (err) {
             console.error("Error fetching habits:", err);
@@ -358,7 +401,9 @@ export default function Dashboard() {
 
     return (
         <PageWrapper>
-           {user ? (
+            {loading ? (
+                <LoadingScreen message="Loading your dashboard..." />
+            ) : user ? (
                 <div className="dashboard">
                     <div className="app-logo">
                         <img src={habitLogo} alt="Habit Tracker Logo" className="logo-img" />
@@ -407,6 +452,14 @@ export default function Dashboard() {
                             value={newDescription}
                             onChange={e => setNewDescription(e.target.value)}
                         />
+                        <input
+                            type="number"
+                            placeholder="Goal (e.g. 7 days)"
+                            value={newGoal}
+                            onChange={e => setNewGoal(e.target.value)}
+                            min="1"
+                            required
+                        />
                         {formError && <p className="error-message">{formError}</p>}
                         <button type="submit"><img src={addIcon} alt="Add" className="icon white-icon" /><span>Add Habit</span></button>
             </form>
@@ -417,6 +470,7 @@ export default function Dashboard() {
                         <li key={habit.id} className="habit-item">
                             <span className="habit-name">{habit.title}</span>
                             {habit.description && <p className="habit-description">{habit.description}</p>}
+                            <p className="habit-goal">Goal: {habit.goal || "—"} days</p>
                             <div className="divider"></div>
                             <div className="habit-actions">
                                 <button onClick={() => handleEditHabit(habit.id)}><img src={editIcon} alt="Edit" className="icon white-icon" /><span>Edit</span></button>
@@ -428,6 +482,27 @@ export default function Dashboard() {
                                 </button>
                             </div>
                             <span className="habit-streak">Streak: {habit.streak || 0} days</span>
+
+                            {/* Progress bar with label and percentage*/}
+                            <div className="progress-section">
+                                <p className="progress-label">
+                                Progress toward goal:{habit.completedCount} of {habit.goal} days (
+                                    {habit.goal /*&& habit.completedCount !== undefined*/
+                                    ? `${Math.min(
+                                        Math.round((habit.completedCount / habit.goal) * 100),
+                                        100
+                                    )}%`
+                                        : "0%"}
+                                )
+                            </p>
+                            <ProgressBar
+                                progress={
+                                        habit.goal && typeof habit.completedCount === "number" /*&& habit.completedCount !== undefined*/
+                                        ? Math.min((habit.completedCount / habit.goal) * 100, 100)
+                                        : 0
+                                }
+                                />
+                            </div>
                         </li>
                     ))}
                 </ul> 

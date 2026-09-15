@@ -394,3 +394,15 @@ button:hover .logo-text {
     }
 }
 
+@media (max-width: 425px) {
+    .habit-actions {
+        flex-wrap: wrap; /* allow wrapping */
+        justify-content: center;/* center buttons */
+        gap: 8px; /* spacing between buttons */
+    }
+
+    .habit-actions button {
+        flex: 1 1 45%; /* each button takes ~half width */
+        max-width: 140px; /* cap width so they don’t spill */
+    }
+}

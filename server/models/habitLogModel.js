@@ -1,11 +1,29 @@
 import pool from "../db.js";
 
-export async function getHabitLogsByUser(userId) {
+/*export async function getHabitLogsByUser(userId) {
     const result = await pool.query(
-        `SELECT hl.*, h.title, h.description
+        `SELECT hl.*, h.title, h.description, h.goal
      FROM habit_logs hl
      JOIN habits h ON hl.habit_id = h.id
      WHERE h.user_id = $1`,
+        [userId]
+    );
+    return result.rows;
+} */
+export async function getHabitLogsByUser(userId) {
+    const result = await pool.query(
+        `SELECT h.id AS habit_id,
+            h.title,
+            h.description,
+            h.goal,
+            hl.id AS log_id,
+            hl.date_completed,
+            hl.notes,
+            hl.created_at
+     FROM habits h
+     LEFT JOIN habit_logs hl ON hl.habit_id = h.id
+     WHERE h.user_id = $1
+     ORDER BY h.id, hl.date_completed`,
         [userId]
     );
     return result.rows;

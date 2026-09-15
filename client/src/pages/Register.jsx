@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register } from "../services/authService";
 import PageWrapper from "../components/PageWrapper";
+import LoadingScreen from "../components/LoadingScreen";
 import "../styles/Register.css";
 
 import habitLogo from "../assets/habit-tracker.png";
@@ -10,13 +11,25 @@ import logoutIcon from "../assets/logout.svg";
 export default function Register() {
     const [form, setForm] = useState({ username: "", email: "", password: "" });
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false); // optional loading state
 
     async function handleSubmit(e) {
         e.preventDefault();
-        const data = await register(form.username, form.email, form.password);
-        if (data) {
-            navigate("/login"); // redirect after success
+        setLoading(true); // Show loading screen while registering
+        try {
+            const data = await register(form.username, form.email, form.password);
+            if (data) {
+                navigate("/login"); // redirect after success
+            }
+        } catch (err) {
+            console.error("Registration failed:", err);
+        } finally {
+            setTimeout(() => setLoading(false), 500); // Hide loading screen after registration attempt
         }
+    }
+
+    if (loading) {
+        return <LoadingScreen message="Creating your account..." />;
     }
 
     return (
