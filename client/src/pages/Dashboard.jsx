@@ -46,7 +46,7 @@ export default function Dashboard() {
                     return;
                 }
                 // Fetch current user from backend
-                const userRes = await fetch("http://localhost:5000/auth/me", {
+                const userRes = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (userRes.status !== 200) {
@@ -109,7 +109,7 @@ export default function Dashboard() {
         formData.append("profilePic", selectedFile);
 
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/users/profile-pic", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/users/profile-pic`, {
             method: "POST",
             headers: { Authorization: `Bearer ${token}` },
             body: formData, // no content-type header; browser sets it automatically for FormData
@@ -136,7 +136,7 @@ export default function Dashboard() {
                         type="button"
                         onClick={async () => {
                             const token = localStorage.getItem("token");
-                            const res = await fetch("http://localhost:5000/users/profile-pic", {
+                            const res = await fetch(`${import.meta.env.VITE_API_URL}/users/profile-pic`, {
                                 method: "DELETE",
                                 headers: { Authorization: `Bearer ${token}` },
                             });
@@ -162,7 +162,7 @@ export default function Dashboard() {
                 payload.description = newDescription;
             }
 
-            const res = await fetch("http://localhost:5000/habits", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/habits`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -210,7 +210,7 @@ export default function Dashboard() {
                                 payload.description = newDescription;
                             }
                             
-                            const res = await fetch(`http://localhost:5000/habits/${id}`, {
+                            const res = await fetch(`${import.meta.env.VITE_API_URL}/habits/${id}`, {
                                 method: "PUT",
                                 headers: {
                                     "Content-Type": "application/json",
@@ -279,7 +279,7 @@ export default function Dashboard() {
                         onClick={async () => {
                             try {
                                 const token = localStorage.getItem("token");
-                                await fetch(`http://localhost:5000/habits/${id}`, {
+                                await fetch(`${import.meta.env.VITE_API_URL}/habits/${id}`, {
                                     method: "DELETE",
                                     headers: { Authorization: `Bearer ${token}` },
                                 });
@@ -307,10 +307,10 @@ export default function Dashboard() {
             const token = localStorage.getItem("token");
 
             const [habitsRes, logsRes] = await Promise.all([
-                fetch("http://localhost:5000/habits", {
+                fetch(`${import.meta.env.VITE_API_URL}/habits`, {
                 headers: { Authorization: `Bearer ${token}` },
                 }),
-                fetch("http://localhost:5000/habit-logs", {
+                fetch(`${import.meta.env.VITE_API_URL}/habit-logs`, {
                 headers: { Authorization: `Bearer ${token}` },
                 })
             ]);
@@ -353,7 +353,7 @@ export default function Dashboard() {
 
             const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
-            const res = await fetch(`http://localhost:5000/habit-logs`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/habit-logs`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -376,7 +376,7 @@ export default function Dashboard() {
     async function handleUndo(id) {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`http://localhost:5000/habit-logs/undo`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/habit-logs/undo`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -421,7 +421,7 @@ export default function Dashboard() {
                         <div className="profile-pic-wrapper">
                     <img
                         src={user?.profile_pic_url
-                            ? `http://localhost:5000${user.profile_pic_url}`
+                            ? `${import.meta.env.VITE_API_URL}${user.profile_pic_url}`
                             : defaultAvatar}
                         alt="Profile"
                         className="profile-pic clickable"
