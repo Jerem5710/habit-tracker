@@ -199,6 +199,7 @@ export default function Dashboard() {
                         const newTitle = e.target.elements.newTitle.value;
                         const newDescription = e.target.elements.newDescription.value;
                         const newGoal = e.target.elements.newGoal.value;
+                        const newFrequency = e.target.elements.newFrequency.value;
 
                         if (newTitle.trim() === "") {
                             setEditFormError("Title is required");
@@ -208,7 +209,11 @@ export default function Dashboard() {
 
                         try {
                             const token = localStorage.getItem("token");
-                            const payload = { title: newTitle, goal: parseInt(newGoal, 10) };
+                            const payload = {
+                                title: newTitle,
+                                goal: parseInt(newGoal, 10),
+                                frequency: newFrequency // include frequency
+                            };
                             if (newDescription.trim() !== "") {
                                 payload.description = newDescription;
                             }
@@ -257,6 +262,15 @@ export default function Dashboard() {
                         min="1"
                         required
                     />
+                    <select
+                        name="newFrequency"
+                        defaultValue={habitToEdit?.frequency || "daily"}
+                        required
+                    >
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select> 
                     {editFormError && <p className="error-message">{editFormError}</p>}
                     <div className="modal-actions">
                         <button type="submit" className="edit-save">Save</button>
@@ -482,6 +496,7 @@ export default function Dashboard() {
                         <li key={habit.id} className="habit-item">
                             <span className="habit-name">{habit.title}</span>
                             {habit.description && <p className="habit-description">{habit.description}</p>}
+                            <p className="habit-frequency">Frequency: {habit.frequency || "—"}</p>
                             <p className="habit-goal">Goal: {habit.goal || "—"} days</p>
                             <div className="divider"></div>
                             <div className="habit-actions">
