@@ -16,6 +16,7 @@ export async function getHabitLogsByUser(userId) {
             h.title,
             h.description,
             h.goal,
+            h.frequency,
             hl.id AS log_id,
             hl.date_completed,
             hl.notes,
