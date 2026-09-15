@@ -13,8 +13,14 @@ const app = express();
 
 app.use(express.json());
 
+// Allow both local dev and deployed frontend
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://habit-tracker-1-c9kh.onrender.com"
+];
+
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true
 }));
 
