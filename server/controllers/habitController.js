@@ -13,6 +13,7 @@ export async function fetchHabits(req, res) {
 }
 
 export async function addHabit(req, res) {
+    console.log("Habit creation body:", req.body);
     const { title, description, frequency, goal } = req.body;
     try {
         const habit = await createHabit(req.user.id, title, description, frequency, goal);
