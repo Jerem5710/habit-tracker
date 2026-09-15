@@ -15,6 +15,11 @@ export async function fetchHabits(req, res) {
 export async function addHabit(req, res) {
     console.log("Habit creation body:", req.body);
     const { title, description, frequency, goal } = req.body;
+
+    if (!frequency) {
+        frequency = "daily"; // fallback if frontend forgets
+    }
+
     try {
         const habit = await createHabit(req.user.id, title, description, frequency, goal);
 
@@ -43,6 +48,10 @@ export async function addHabit(req, res) {
 export async function editHabit(req, res) {
     const { title, description, frequency, goal } = req.body;
     const habitId = req.params.id;
+
+    if (!frequency) {
+        frequency = "daily"; // fallback if frontend forgets
+    }
 
     try {
         const habit = await updateHabit(req.user.id, habitId, title, description, frequency, goal);

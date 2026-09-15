@@ -345,7 +345,7 @@ export default function Dashboard() {
                         id: habit.id,
                         title: habit.title,
                         description: habit.description,
-                        frequency: habit.frequency,
+                        frequency: logInfo?.frequency ?? habit.frequency,
                         goal: habit.goal,
                         streak: logInfo?.currentStreak ?? 0,
                         longestStreak: logInfo?.longestStreak ?? 0,

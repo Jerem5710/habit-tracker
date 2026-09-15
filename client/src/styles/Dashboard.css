@@ -98,6 +98,36 @@
     padding: 10px;
 }
 
+/* Base styling for frequency dropdown */
+.habit-form select {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover and focus states */
+.habit-form select:hover {
+    border-color: #007bff;
+}
+
+.habit-form select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.4);
+}
+
+/* Option styling */
+.habit-form select option {
+    padding: 8px;
+    font-size: 0.95rem;
+}
+
 .habit-form button {
     padding: 10px 15px;
     background: #007bff;
@@ -404,5 +434,48 @@ button:hover .logo-text {
     .habit-actions button {
         flex: 1 1 45%; /* each button takes ~half width */
         max-width: 140px; /* cap width so they don’t spill */
+    }
+}
+
+/* Responsive adjustments */
+@media (min-width: 320px) and (max-width: 375px) {
+    .habit-form select {
+        width: 100%;
+        max-width: 200px;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Frequency dropdown inside modal */
+form select[name="newFrequency"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 1rem;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover and focus states */
+form select[name="newFrequency"]:hover {
+    border-color: #007bff;
+}
+
+form select[name="newFrequency"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.4);
+}
+
+/* Responsive adjustments */
+@media (min-width: 320px) and (max-width: 375px) {
+    form select[name="newFrequency"] {
+        max-width: 200px;
+        font-size: 0.8rem;
     }
 }
